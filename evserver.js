@@ -275,16 +275,19 @@ router.put("/upload-image", checkToken, async function(request, response) {
 });
 
 router.get("/image", async function(request, response) {
-  try {
-    const mc = await mongoConnector("evserver", "users");
-    const _id = mongo.ObjectID(request.query.id);
-    const user = await mc.query.findOne({ _id });
-    if (!user)
-      return response.json({ error: false, message: "Usuarios no encontrado" });
-    response.sendFile(`${__dirname}/assets/images/avatars/${user.avatar}`);
-  } catch (messageError) {
-    response.json({ error: true, messageError, message: "Ocurrio un error" });
+  const fs = require("fs");
+  const exts = ["png", "jpg", "jpeg", "gif", "tif"];
+  let image = "";
+  for (let i = 0; i < exts.length; i++) {
+    image = `./assets/images/avatars/${request.query.id}.${exts[i]}`;
+    if (fs.existsSync(image)) {
+      image = `${__dirname}/assets/images/avatars/${request.query.id}.${exts[i]}`;
+      break;
+    } else {
+      image = `${__dirname}/assets/images/avatars/default-avatar.jpg`;
+    }
   }
+  response.sendFile(image);
 });
 
 /*
