@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>EVServer - Index</title>
+  </head>
+  <body>
+    <h1>This is a default Page</h1>
+    <div>
+      <input type="text" id="username" placeholder="Usuario" />
+      <input type="password" id="password" placeholder="Password" />
+      <button id="send">Send</button>
+    </div>
+    <div>
+      <input type="text" id="token" />
+      <button id="request">request</button>
+    </div>
+    <div>
+      <input type="file" name="file" id="file" />
+      <canvas
+        width="450"
+        height="250"
+        style="border: solid thin grey"
+        id="canvas"
+      ></canvas>
+    </div>
+    <script>
+      const headers = {
+        method: "post",
+        body: "",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "token": token.value,
+          "db": "evserver",
+          "collection": "users"
+        }
+      };
+      send.addEventListener("click", async function() {
+        headers.body = JSON.stringify({
+          username: username.value,
+          password: password.value,
+          autoLogin: true
+        });
+        const request = await fetch("/evserver/login", headers);
+        const response = await request.json();
+        headers.headers.token = response.user.token;
+        token.value = response.user.token;
+        console.log(response);
+      });
+      request.onclick = async function() {
+        headers.method = "get";
+        delete headers.body;
+        headers.headers.token = token.value;
+        const request = await fetch("/evserver/", headers);
+        const response = await request.json();
+        console.log(response);
+      };
+      file.onchange = function(ev) {
+        headers.headers.token = token.value;
+        const reader = new FileReader();
+        reader.readAsDataURL(ev.target.files[0]);
+        reader.onload = async function(ev) {
+          const imageBase64 = ev.target.result;
+          const image = imageBase64.split(",");
+          const extension = image[0].split("/")[1].split(";")[0];
+
+          headers.method = "put";
+          headers.body = JSON.stringify({
+            id: "5d8f1fb603a9ea368f18ff94",
+            image: image[1],
+            extension
+          });
+
+          const request = await fetch("/evserver/upload-image", headers);
+          const response = await request.json();
+          console.log(response);
+        };
+        reader.onerror = error => console.error(error);
+      };
+    </script>
+  </body>
+</html>
