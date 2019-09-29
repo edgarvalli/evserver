@@ -1,8 +1,10 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 
 const PORT = process.env.PORT || 3080;
 const limit = "5MB";
+app.use(cors());
 app.use(express.json({ limit }));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false, limit }));
