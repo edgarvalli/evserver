@@ -274,7 +274,7 @@ router.put("/upload-image", checkToken, async function(request, response) {
   }
 });
 
-router.get("/image", checkToken, async function(request, response) {
+router.get("/image", async function(request, response) {
   try {
     const mc = await mongoConnector("evserver", "users");
     const _id = mongo.ObjectID(request.query.id);
