@@ -18,19 +18,20 @@ const User = {
   avatar: ""
 };
 
-const setDefaultPost = (item, request) => {
-  item.createById = request.user._id;
-  item.createByUser = request.user.fullname;
-  item.createDate = new Date();
-  item.updateDate = new Date();
-  return item;
+const setDefaultPost = (child, request) => {
+  child.createById = request.user._id;
+  child.createByUser = request.user.fullname;
+  child.createDate = new Date();
+  child.updateDate = new Date();
+  return child;
 };
 
-const setDefaultPut = (item, request) => {
-  item.updateById = request.user._id;
-  item.updateByUser = request.user.fullname;
-  item.updateDate = new Date();
-  return item;
+const setDefaultPut = (child, request) => {
+  child.updateById = request.user._id;
+  child.updateByUser = request.user.fullname;
+  child.updateDate = new Date();
+  child.createDate = new Date(child.createDate);
+  return child;
 };
 
 async function init() {
@@ -122,13 +123,13 @@ router.get("/", checkToken, async function(request, response) {
     limit = parseInt(limit);
 
     const mc = await mongoConnector(db, collection);
-    const items = await mc.query
+    const children = await mc.query
       .find()
       .skip(skip)
       .limit(limit)
       .toArray();
     mc.connection.close();
-    response.json({ error: false, items });
+    response.json({ error: false, children });
   } catch (message) {
     response.json({ error: true, message });
   }
@@ -154,9 +155,9 @@ router.get("/search", checkToken, async function(request, response) {
       })
     };
     const mc = await mongoConnector(db, collection);
-    const items = await mc.query.find(params).toArray();
+    const children = await mc.query.find(params).toArray();
     mc.connection.close();
-    response.json({ error: false, items });
+    response.json({ error: false, children });
   } catch (message) {
     response.json({ error: true, message });
   }
@@ -170,18 +171,19 @@ router.get("/search", checkToken, async function(request, response) {
 router.post("/", checkToken, async function(request, response) {
   try {
     const { db = "evserver", collection = "test" } = request.headers;
-    const { item } = request.body;
-    if (db === undefined && collection === undefined && item === undefined) {
+    const { child } = request.body;
+    console.log(child)
+    if (db === undefined && collection === undefined && child === undefined) {
       return response.json({
         error: true,
         message: "No enviaste la informacion necesaria"
       });
     }
 
-    const _item = setDefaultPost(item, request);
+    const _child = setDefaultPost(child, request);
 
     const mc = await mongoConnector(db, collection);
-    const result = await mc.query.insertOne(_item);
+    const result = await mc.query.insertOne(_child);
     mc.connection.close();
     response.json({ error: false, result });
   } catch (message) {
@@ -197,17 +199,21 @@ router.post("/", checkToken, async function(request, response) {
 router.post("/insertmany", checkToken, async function(request, response) {
   try {
     const { db, collection } = request.headers;
-    const { items = [] } = request.body;
-    if (db === undefined && collection === undefined && items === undefined) {
+    const { children = [] } = request.body;
+    if (
+      db === undefined &&
+      collection === undefined &&
+      children === undefined
+    ) {
       return response.json({
         error: true,
         message: "No enviaste la informacion necesaria"
       });
     }
-    const _items = items.map(item => setDefaultPost(item));
+    const _children = child.map(child => setDefaultPost(item));
 
     const mc = await mongoConnector(db, collection);
-    const result = await mc.query.insertMany(_items);
+    const result = await mc.query.insertMany(_children);
     mc.connection.close();
     response.json({ error: false, result });
   } catch (message) {
@@ -223,20 +229,21 @@ router.post("/insertmany", checkToken, async function(request, response) {
 router.put("/", checkToken, async function(request, response) {
   try {
     const { db, collection } = request.headers;
-    const { item, id } = request.body;
-    if (db === undefined && collection === undefined && item === undefined) {
+    const { child, id } = request.body;
+    if (db === undefined && collection === undefined && child === undefined) {
       return response.json({
         error: true,
         message: "No enviaste la informacion necesaria"
       });
     }
-    const _item = setDefaultPut(item);
+    const _child = setDefaultPut(child, request);
     const mc = await mongoConnector(db, collection);
     const _id = mongo.ObjectID(id);
-    const result = await mc.query.updateOne({ _id }, { $set: _item });
+    const result = await mc.query.updateOne({ _id }, { $set: _child });
     mc.connection.close();
     response.json({ error: false, result });
   } catch (message) {
+    console.log(message)
     response.json({ error: true, message });
   }
 });
