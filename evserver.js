@@ -42,7 +42,8 @@ async function init() {
     if (!admin) await mc.query.insertOne(User);
     mc.connection.close();
   } catch (message) {
-    response.json({ error: true, message });
+    // response.json({ error: true, message });
+    console.log(message)
   }
 }
 
