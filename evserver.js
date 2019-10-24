@@ -124,13 +124,13 @@ router.get("/", checkToken, async function(request, response) {
     limit = parseInt(limit);
 
     const mc = await mongoConnector(db, collection);
-    const children = await mc.query
+    const data = await mc.query
       .find()
       .skip(skip)
       .limit(limit)
       .toArray();
     mc.connection.close();
-    response.json({ error: false, children });
+    response.json({ error: false, data });
   } catch (message) {
     response.json({ error: true, message });
   }
@@ -156,9 +156,9 @@ router.get("/search", checkToken, async function(request, response) {
       })
     };
     const mc = await mongoConnector(db, collection);
-    const children = await mc.query.find(params).toArray();
+    const data = await mc.query.find(params).toArray();
     mc.connection.close();
-    response.json({ error: false, children });
+    response.json({ error: false, data });
   } catch (message) {
     response.json({ error: true, message });
   }
@@ -173,7 +173,6 @@ router.post("/", checkToken, async function(request, response) {
   try {
     const { db = "evserver", collection = "test" } = request.headers;
     const { child } = request.body;
-    console.log(child)
     if (db === undefined && collection === undefined && child === undefined) {
       return response.json({
         error: true,
