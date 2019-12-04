@@ -43,7 +43,7 @@ async function init() {
     mc.connection.close();
   } catch (message) {
     // response.json({ error: true, message });
-    console.log(message)
+    console.log(message);
   }
 }
 
@@ -128,6 +128,7 @@ router.get("/", checkToken, async function(request, response) {
       .find()
       .skip(skip)
       .limit(limit)
+      .sort({ _id: 1 })
       .toArray();
     mc.connection.close();
     response.json({ error: false, data });
@@ -156,7 +157,10 @@ router.get("/search", checkToken, async function(request, response) {
       })
     };
     const mc = await mongoConnector(db, collection);
-    const data = await mc.query.find(params).toArray();
+    const data = await mc.query
+      .find(params)
+      .sort({ _id: 1 })
+      .toArray();
     mc.connection.close();
     response.json({ error: false, data });
   } catch (message) {
@@ -243,7 +247,7 @@ router.put("/", checkToken, async function(request, response) {
     mc.connection.close();
     response.json({ error: false, result });
   } catch (message) {
-    console.log(message)
+    console.log(message);
     response.json({ error: true, message });
   }
 });
