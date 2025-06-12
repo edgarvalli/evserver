@@ -32,12 +32,15 @@ def main():
         
         config = json.loads(f.read())
         app.config["app_config"] = config
+    
 
         dbtool.createdb()
-        
-        if config['dbconfig']: config.pop("dbconfig")
-        
-        app.run(**config)
+    
+        app.run(
+            host=config['host'],
+            port=config['port'],
+            debug=config['debug']
+        )
 
 
 if __name__ == "__main__":
