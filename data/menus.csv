@@ -1,5 +1,0 @@
-menu_key,name,path,icon,description,parent_key,sequence,active
-menu_root,index,/app,home,Inicio,,0,1
-config_menu_id,Configuracion,/app/config,setting,Configuracion,menu_root,5,1
-users_config_id,Usuarios,/app/config/users,users,Usuarios,config_menu_id,1,1
-menus_config_id,Menus,/app/config/menus,menu,menus,config_menu_id,2,1
