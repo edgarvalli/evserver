@@ -78,3 +78,9 @@ def insert_all_paths():
 
     cursor.close()
     sql.close()
+
+def hash_password(password: str):
+    import hashlib
+    hashed = hashlib.sha256()
+    hashed.update(password.encode(encoding='utf-8'))
+    return hashed.hexdigest()
