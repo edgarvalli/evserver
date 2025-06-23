@@ -42,16 +42,39 @@ def get_mysql_connection() -> _mysql_connector.MySQLConnection:
 
     except _mysql_connector.errors.ProgrammingError as e:
         if e.errno == 1049:
-            dbname = config["database"]
-            del config["database"]
-            cxn = _mysql_connector.connect(**config)
-            cursor = cxn.cursor()
-            cursor.execute("CREATE DATABASE " + dbname)
-            cxn.commit()
-            cursor.close()
-            cxn.database = dbname
-            return cxn
+            from utils.dbtool import createdb
+
+            createdb(config)
+            return _mysql_connector.connect(**config)
 
         raise e
-    except:
-        raise "Ocurrio un error desconocido en mysql"
+    except KeyError as e:
+        raise e
+
+
+def insert_all_paths():
+
+    sql = get_mysql_connection()
+    sql.autocommit = True
+    cursor = sql.cursor(dictionary=True)
+    query = "SELECT COUNT(id) total FROM endpoints"
+    cursor.execute(query)
+
+    t: dict = cursor.fetchone()
+    path_ids = []
+
+    if t.get("total", 0) == 0:
+        query = "SELECT id FROM roles WHERE name='master'"
+        cursor.execute(query)
+        role: dict = cursor.fetchone()
+        role = role.get("id", 0)
+
+        query = "INSERT IGNORE INTO endpoints (path,public) VALUES (%s,0)"
+
+        for url in current_app.url_map.iter_rules():
+            print(url)
+            cursor.execute(query, (url.rule,))
+            path_ids.append((role, cursor.lastrowid))
+
+    cursor.close()
+    sql.close()
