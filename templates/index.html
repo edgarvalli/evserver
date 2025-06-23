@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenido a EVAPP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        h1 {
+            color: #2d7be5;
+            margin-bottom: 0.5em;
+        }
+
+        p {
+            color: #444;
+            font-size: 1.2em;
+        }
+
+        /* Tema oscuro */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #181a1b;
+                color: #f8f9fa;
+            }
+            .container {
+                background: #23272b;
+                color: #f8f9fa;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            }
+
+            h1 {
+                color: #4da3ff;
+            }
+
+            p {
+                color: #cfd8dc;
+            }
+        }
+    </style>
+</head>
+
+<body data-bs-theme="dark">
+    <div class="container">
+        <h1>Bienvenido a EVAPP</h1>
+        <p>Tu aplicación para gestionar documentos eléctricos.</p>
+    </div>
+</body>
+
+</html>
