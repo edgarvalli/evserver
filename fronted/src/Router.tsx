@@ -7,7 +7,8 @@ export type RouteProp = {
 }
 
 export type RouterProps = {
-    routes: RouteProp[]
+    routes: RouteProp[];
+    notfound?: React.ReactElement
 }
 
 export type LinkProps = {
@@ -58,7 +59,7 @@ export default (props: RouterProps) => {
         return () => window.removeEventListener("popstate", onPopState);
     }, []);
 
-    let Child = <div>404 Not Found</div>;
+    let Child =   props.notfound ||<div>404 Not Found</div>;
 
     props.routes.forEach(item => {
         let url = baseUrl + item.path;
