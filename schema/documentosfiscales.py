@@ -22,6 +22,7 @@ class DocumentoFiscal(models.Model):
     metodo_pago = columns.Char("Metodo de pago")
     uuid = columns.Char('UUID', size=100)
     fecha_timbrado = columns.DateTime('Fecha de Timbrado')
+    xml = columns.Text('XML')
 
 
 class DocumentoConceptos(models.Model):
