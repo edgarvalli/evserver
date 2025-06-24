@@ -1,7 +1,12 @@
 from flask import Flask, render_template
+from importlib import import_module
+import os
 
 app = Flask(__name__)
 
+app.secret_key = os.environ.get('APP_SECRET_KEY', 'p4ssw0rd')
+
+app.register_blueprint(import_module('controllers.api').api)
 
 @app.route('/')
 def index():
