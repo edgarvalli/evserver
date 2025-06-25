@@ -363,14 +363,14 @@ class Database:
         values = values[:-1]
 
         query = (
-            f"INSERT INTO {self.config.database}.{model} ({','.join(fields)}) VALUES ({values})"
+            f"INSERT IGNORE INTO {self.config.database}.{model} ({','.join(fields)}) VALUES ({values})"
         )
 
-        try:
+        sql = self.get_connection()
+        cursor: mysql.connector.cursor.MySQLCursor = sql.cursor(dictionary=True)
+        cursor.execute(query, record)
 
-            sql = self.get_connection()
-            cursor: mysql.connector.cursor.MySQLCursor = sql.cursor(dictionary=True)
-            cursor.execute(query, record)
+        try:
             sql.commit()
             lastid = cursor.lastrowid
             result.error = False

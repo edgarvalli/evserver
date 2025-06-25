@@ -60,3 +60,7 @@ body {
 .form-control, .form-select {
     padding: .75rem;
 }
+
+.uppercase {
+    text-transform: uppercase;
+}

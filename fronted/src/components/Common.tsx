@@ -65,26 +65,42 @@ export const Template = ({ children }: { children: React.ReactNode }) => {
     )
 }
 
-type SelectProps = React.ComponentProps<typeof Form.Select>;
+// type SelectProps = React.ComponentProps<typeof Form.Select>;
+interface SelectProps extends React.ComponentProps<typeof Form.Select> {
+    tipo?: number;
+}
+
+type APISelectProps = {
+    model: string;
+    labelKey: string;
+    valueKey: string;
+    placeholder?: string;
+    onItemSelcted?: (item: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
 
 export const RegimenFiscalList = (props: SelectProps) => {
 
     const [regimenes, setRegimens] = useState<Record<string, any>[]>([])
+    const getData = async () => {
+        const url = '/api/regimenes_fiscales?fields=id,codigo,descripcion&tipo_codigo=' + props.tipo;
+        const request = await fetch(url);
+        const response = await request.json();
+        if (response.error) return alert(response.message);
+        setRegimens(response.data);
+    }
 
     useEffect(() => {
-        fetch('/api/regimenes_fiscales?fields=id,codigo,descripcion').then(response => response.json())
-            .then(response => {
-                if (response.error) return alert(response.message);
-                setRegimens(response.data)
-            })
-    }, [])
+        getData()
+    }, [props.tipo])
 
     return (
         <Form.Select defaultValue={""} {...props}>
             <option value="" disabled>Selecciona un regimen fiscal</option>
             {
                 regimenes.map(r => (
-                    <option value={r.id} key={"option-rf-" + r.id}>{r.codigo + " - " + r.descripcion}</option>
+                    <option value={r.id} key={"option-rf-" + r.id}
+                    >{r.codigo + " - " + r.descripcion}</option>
                 ))
             }
         </Form.Select>
@@ -109,7 +125,34 @@ export const MetodoPagoList = (props: SelectProps) => {
             <option value="" disabled>Selecciona un metodo de pago</option>
             {
                 metodos.map(r => (
-                    <option value={r.id} key={"option-rf-" + r.id}>{r.codigo + " - " + r.descripcion}</option>
+                    <option value={r.id} key={"option-rf-" + r.id}
+                    >{r.codigo + " - " + r.descripcion}</option>
+                ))
+            }
+        </Form.Select>
+    )
+
+}
+
+export const APISelect = (props: APISelectProps) => {
+
+    const [items, setItems] = useState<Record<string, any>[]>([])
+
+    useEffect(() => {
+        const url = `/api/${props.model}`
+        fetch(url).then(response => response.json())
+            .then(response => {
+                if (response.error) return alert(response.message);
+                setItems(response.data)
+            })
+    }, [])
+
+    return (
+        <Form.Select defaultValue={""} onChange={props.onItemSelcted}>
+            <option value="" disabled>{props.placeholder}</option>
+            {
+                items.map(item => (
+                    <option value={item[props.valueKey]} key={"option-api-" + item.id}>{item[props.labelKey]}</option>
                 ))
             }
         </Form.Select>

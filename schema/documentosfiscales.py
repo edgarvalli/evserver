@@ -5,6 +5,10 @@ class DocumentoFiscal(models.Model):
     _name = "documentos_fiscales"
     _description = "Tabla donde se guardan todos los CFDIs"
 
+    emisor = columns.Char("Emisor", size=200)
+    emisor_rfc = columns.Char("RFC Emisor", size=13)
+    receptor = columns.Char("Emisor", size=200)
+    receptor_rfc = columns.Char("RFC Emisor", size=13)
     version = columns.Char("Version", size=10)
     serie = columns.Char("Serie", size=50)
     folio = columns.Char("Folio", size=50)
@@ -17,10 +21,10 @@ class DocumentoFiscal(models.Model):
     tipo_cambio = columns.Float("Tipo de Cambio")
     subtotal = columns.Float("Subtotal")
     total = columns.Float("Total")
-    tipo_comprobante = columns.Char("Tipo de Comprobante")
+    tipo_de_comprobante = columns.Char("Tipo de Comprobante")
     exportacion = columns.Char("Exportacion")
     metodo_pago = columns.Char("Metodo de pago")
-    uuid = columns.Char('UUID', size=100)
+    uuid_comprobante = columns.Char('UUID', size=100)
     fecha_timbrado = columns.DateTime('Fecha de Timbrado')
     xml = columns.Text('XML')
 

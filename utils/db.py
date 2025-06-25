@@ -1,15 +1,17 @@
 import re
-from utils.tools import get_config, _mysql_connector
+from utils.tools import get_config
+import mysql.connector as _mysql
+import mysql.connector.errors as _mysql_errors
 
 
 class mysql:
 
     @staticmethod
-    def get_connection() -> _mysql_connector.MySQLConnection:
+    def get_connection() -> _mysql.MySQLConnection:
         config = get_config()['mysql']
 
         try:
-            sql = _mysql_connector.connect(**config)
+            sql = _mysql.connect(**config)
             return sql
         except KeyError as e:
             raise ValueError(e)
@@ -128,7 +130,6 @@ class mysql:
         values = tuple([v for v in kvargs.values()])
 
         query = f"INSERT IGNORE INTO {model} ({fields}) VALUES ({placeholders})"
-        print(values)
         cursor.execute(query, values)
         data = {"error": False, "message": "", "lastrowid": cursor.lastrowid}
         sql.commit()
