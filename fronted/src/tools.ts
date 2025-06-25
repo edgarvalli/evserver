@@ -10,3 +10,9 @@ export function isDarkTheme(): boolean {
 
     return isDark;
 }
+
+
+export const setTheme = (theme: string) => {
+    window.document.body.setAttribute('data-bs-theme', theme);
+    window.localStorage.setItem('theme', theme);
+}

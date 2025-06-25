@@ -1,0 +1,24 @@
+codigo,descripcion,tipo,tipo_codigo
+605,Sueldos y Salarios e Ingresos Asimilados a Salarios,Persona Física,1
+606,Arrendamiento,Persona Física,1
+608,Demás ingresos,Persona Física,1
+611,Ingresos por Dividendos (socios y accionistas),Persona Física,1
+612,Personas Físicas con Actividades Empresariales y Profesionales,Persona Física,1
+614,Ingresos por intereses,Persona Física,1
+615,Régimen de los ingresos por obtención de premios,Persona Física,1
+616,Sin obligaciones fiscales,Persona Física,1
+620,Sociedades Cooperativas de Producción que optan por diferir sus ingresos,Persona Física,1
+621,Incorporación Fiscal (derogado en 2022),Persona Física,1
+625,"Régimen de Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras",Persona Física,1
+626,Régimen Simplificado de Confianza,Persona Física,1
+601,General de Ley Personas Morales,Persona Moral,2
+603,Personas Morales con Fines no Lucrativos,Persona Moral,2
+607,Régimen de Enajenación o Adquisición de Bienes,Persona Moral,2
+610,Régimen de los ingresos por intereses,Persona Moral,2
+622,"Actividades Agrícolas, Ganaderas, Silí­colas y Pesqueras",Persona Moral,2
+623,Opcional para Grupos de Sociedades,Persona Moral,2
+624,Coordinados,Persona Moral,2
+628,Hidrocarburos,Persona Moral,2
+629,De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales,Persona Moral,2
+630,Enajenación de acciones en bolsa de valores,Persona Moral,2
+628,Régimen Simplificado de Confianza (RESICO),Persona Moral,2

@@ -15,6 +15,7 @@ export type LinkProps = {
     children: React.ReactNode;
     href: string;
     title?: string;
+    as?: React.ElementType;
 }
 
 export const useParams = (): Record<string, any> => {
@@ -34,12 +35,25 @@ export const useParams = (): Record<string, any> => {
     return _params
 }
 
+export const navigate = (path: string) => {
+    window.history.pushState('', '', path)
+    window.dispatchEvent(new PopStateEvent("popstate"))
+}
+
 export const Link = (props: LinkProps) => {
     const handleHref = (ev: React.MouseEvent<HTMLElement>) => {
         ev.preventDefault();
         window.history.pushState(props.title, '', props.href);
         window.dispatchEvent(new PopStateEvent("popstate")); // <--- clave
     };
+
+    if (props.as) {
+        const As = props.as;
+        if (props.as === "button") {
+            return <a className="rounded-button" href={props.href} title={props.title} onClick={handleHref}>{props.children}</a>
+        }
+        return <As href={props.href} title={props.title} onClick={handleHref}>{props.children}</As>
+    }
 
     return (
         <Nav.Link href={props.href} onClick={handleHref}>
@@ -59,7 +73,7 @@ export default (props: RouterProps) => {
         return () => window.removeEventListener("popstate", onPopState);
     }, []);
 
-    let Child =   props.notfound ||<div>404 Not Found</div>;
+    let Child = props.notfound || <div>404 Not Found</div>;
 
     props.routes.forEach(item => {
         let url = baseUrl + item.path;
