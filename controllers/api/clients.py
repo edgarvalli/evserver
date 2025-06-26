@@ -58,7 +58,7 @@ def clients_route_save():
             for file in files:
                 file = files[file]
                 filename = file.filename
-                file.save(filename)
+                file.save('filestore/' + filename)
 
         return {"error": False, "message": ""}
     except _mysql_errors.ProgrammingError as e:

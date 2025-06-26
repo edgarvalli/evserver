@@ -1,10 +1,8 @@
-import { Table } from "react-bootstrap"
-import { Link, useParams } from "../../Router"
-import { Template } from "../Common"
+import { Link, useNavigate } from "react-router"
+import { TableFixedHeader, Template } from "../Common"
 import { useEffect, useState } from "react"
 
 export default () => {
-    const params = useParams()
 
     const [clients, setClients] = useState<Record<string, any>[]>([])
 
@@ -19,6 +17,8 @@ export default () => {
         searchClients()
     },[])
 
+    const navigate = useNavigate()
+
     return (
         <Template>
 
@@ -27,7 +27,7 @@ export default () => {
                     <div className="col d-flex">
                         <h3>Lista de clientes</h3>
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <Link href={params.makeUrl('/client/form?mode=new')} as="button">
+                        <Link to={'/client/form'} className="rounded-button">
                             NUEVO
                         </Link>
                     </div>
@@ -35,7 +35,7 @@ export default () => {
             </div>
 
             <div className="sheet mt-4">
-                <Table>
+                <TableFixedHeader>
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -50,11 +50,11 @@ export default () => {
                         {
                             clients.map((client, i) => {
                                 return (
-                                    <tr key={"row-client-" + i}>
+                                    <tr key={"row-client-" + i} onClick={() => navigate(`/client/${client.rfc}`)}>
                                         <td>{client.id}</td>
                                         <td>{client.name}</td>
                                         <td>{client.email}</td>
-                                        <td>{client.rfc}</td>
+                                        <td>{client.rfc.toUpperCase() || ''}</td>
                                         <td>{client.regimen_fiscal}</td>
                                         <td>{client.zip_code}</td>
                                     </tr>
@@ -62,7 +62,7 @@ export default () => {
                             })
                         }
                     </tbody>
-                </Table>
+                </TableFixedHeader>
             </div>
 
         </Template>

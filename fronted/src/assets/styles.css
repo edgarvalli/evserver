@@ -57,10 +57,48 @@ body {
     transition: all .25s;
 }
 
-.form-control, .form-select {
+.form-control,
+.form-select {
     padding: .75rem;
 }
 
 .uppercase {
     text-transform: uppercase;
+}
+
+.table-head-fixed {
+    max-height: 35rem;
+    overflow: auto;
+}
+
+.table-head-fixed table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table-head-fixed th,
+td {
+    padding: 8px;
+    min-width: 150px;
+}
+
+.table-head-fixed thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f5f5f7;
+}
+
+.table-head-fixed tbody tr:hover {
+    cursor: pointer;
+    background: #f5f5f7;
+}
+
+[data-bs-theme="dark"] .table-head-fixed thead th {
+    background: #2b3035;
+}
+
+[data-bs-theme="dark"] .table-head-fixed tbody tr:hover {
+    cursor: pointer;
+    background: #212529;
 }

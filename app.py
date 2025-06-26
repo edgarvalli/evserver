@@ -8,6 +8,7 @@ app.secret_key = os.environ.get('APP_SECRET_KEY', 'p4ssw0rd')
 app.config['UPLOAD_FOLDER'] = os.environ.get('APP_UPLOAD_FOLDER','filestore')
 
 app.register_blueprint(import_module('controllers.api').api)
+app.register_blueprint(import_module('controllers.app').app_router)
 
 @app.route('/')
 def index():

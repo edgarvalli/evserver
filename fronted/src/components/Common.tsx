@@ -1,11 +1,10 @@
 import { Container, Form, Nav, Navbar } from "react-bootstrap";
-import { useParams, Link } from "../Router";
+import { Link } from "react-router";
 import { MdDarkMode, MdOutlineLightMode } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { isDarkTheme, setTheme } from "../tools";
 
 export const NavbarApp = () => {
-    const params = useParams()
     const [isDark, setDark] = useState(true);
 
 
@@ -30,19 +29,19 @@ export const NavbarApp = () => {
     }, [])
 
     return (
-        <Navbar className="bg-body-tertiary">
+        <Navbar className="bg-body-tertiary" fixed="top">
             <Container fluid>
                 <Navbar.Brand>EVAPP</Navbar.Brand>
                 <Navbar.Toggle aria-controls="evapp-navbar" />
                 <Navbar.Collapse id="evapp-navbar">
                     <Nav className="me-auto">
-                        <Link href={params.makeUrl('/')} >Dashboard</Link>
-                        <Link href={params.makeUrl('/clients')} >Clientes</Link>
-                        <Link href={params.makeUrl('/cfdi')} >CFDI</Link>
+                        <Link to="/" className="nav-link">Dashboard</Link>
+                        <Link to="/clients" className="nav-link">Clientes</Link>
+                        <Link to="/cfdi" className="nav-link">CFDI</Link>
                     </Nav>
                 </Navbar.Collapse>
                 <div className="d-flex justify-content-between">
-                    <Link href="/app/logout">Cerrar Sesión</Link>
+                    <Link to="/logout" className="nav-link">Cerrar Sesión</Link>
                     {
                         isDark
                             ? <MdOutlineLightMode data-name="light" {...iconProps} />
@@ -55,10 +54,30 @@ export const NavbarApp = () => {
 }
 
 export const Template = ({ children }: { children: React.ReactNode }) => {
+    const [fluid, setFluid] = useState(false);
+
+    const switchFluid = (size: number) => {
+        const limit = 980;
+        if (size < limit) {
+            setFluid(true);
+        } else {
+            setFluid(false);
+        }
+    }
+
+    window.addEventListener('resize', (ev) => {
+        const windowWidth: number = (ev.currentTarget as Window).innerWidth;
+        switchFluid(windowWidth)
+    })
+
+    useEffect(() => {
+        switchFluid(window.innerWidth)
+    }, [])
+
     return (
         <>
             <NavbarApp />
-            <Container>
+            <Container fluid={fluid} style={{paddingTop: 40}}>
                 {children}
             </Container>
         </>
@@ -87,7 +106,9 @@ export const RegimenFiscalList = (props: SelectProps) => {
         const request = await fetch(url);
         const response = await request.json();
         if (response.error) return alert(response.message);
-        setRegimens(response.data);
+        if (response.data.length > 0) {
+            setRegimens(response.data);
+        }
     }
 
     useEffect(() => {
@@ -116,7 +137,9 @@ export const MetodoPagoList = (props: SelectProps) => {
         fetch('/api/metodo_pago?fields=id,codigo,descripcion').then(response => response.json())
             .then(response => {
                 if (response.error) return alert(response.message);
-                setMetodos(response.data)
+                if (response.data.length > 0) {
+                    setMetodos(response.data)
+                }
             })
     }, [])
 
@@ -158,4 +181,14 @@ export const APISelect = (props: APISelectProps) => {
         </Form.Select>
     )
 
+}
+
+export const TableFixedHeader = (props: React.TableHTMLAttributes<HTMLTableElement>) => {
+    return (
+        <div className="table-head-fixed">
+            <table {...props}>
+                {props.children}
+            </table>
+        </div>
+    )
 }

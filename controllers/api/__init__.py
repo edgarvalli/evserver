@@ -16,9 +16,13 @@ def api_index():
 
 @api.route('/<model>')
 def api_search(model: str):
+
+    response = mysql.search(model=model, **request.args)
+
     return {
         'error': False,
-        'data': mysql.search(model=model, **request.args)
+        'data': response.get('result'),
+        'total_rows': response.get('total_rows',0)
     }
 
 @api.route('/<model>/save', methods=['POST'])

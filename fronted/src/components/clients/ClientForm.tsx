@@ -1,14 +1,14 @@
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
-// import { useParams } from "../../Router"
 import { MetodoPagoList, RegimenFiscalList, Template } from "../Common"
 import { useState } from "react";
-import { navigate } from "../../Router";
+import { useNavigate } from "react-router";
 
 export default () => {
 
-    // const params = useParams();
-
     const [tipoContribuyente, setTipoContribuyente] = useState(0)
+    
+    const navigate = useNavigate()
+
 
     const onSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
         ev.preventDefault();
@@ -20,7 +20,7 @@ export default () => {
         .then(response => response.json())
         .then(response => {
             if (response.error) return alert(response.message);
-            navigate('/app/clients')
+            navigate('/clients')
         })
         
         // const data = Object.fromEntries(formData.entries());
