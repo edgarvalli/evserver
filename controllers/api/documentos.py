@@ -2,7 +2,7 @@ from zipfile import ZipFile
 from xml.etree.ElementTree import ParseError
 from flask import Blueprint, request, jsonify
 from utils.tools import get_config
-from schema.documentosfiscales import DocumentoFiscal
+from schema.documentos import DocumentoFiscal
 from lib.evschema import DBConfig
 from utils.db import _mysql_errors, mysql
 from datetime import datetime

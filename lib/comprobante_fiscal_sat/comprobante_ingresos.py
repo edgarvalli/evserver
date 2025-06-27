@@ -108,7 +108,6 @@ class ComprobanteIngreso:
         comprobante_ingreso = ComprobanteIngreso()
         comprobante_ingreso.comprobante = comprobante
         comprobante.impuestos = comprobante_impuestos
-        comprobante_ingreso.comprobante = comprobante
         comprobante_ingreso.emisor = emisor
         comprobante_ingreso.receptor = receptor
         comprobante_ingreso.timbrefiscal = timbrefiscal

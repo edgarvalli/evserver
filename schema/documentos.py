@@ -1,8 +1,8 @@
 from lib.evschema import models, columns
 
 
-class DocumentoFiscal(models.Model):
-    _name = "documentos_fiscales"
+class Documento(models.Model):
+    _name = "documentos"
     _description = "Tabla donde se guardan todos los CFDIs"
 
     emisor = columns.Char("Emisor", size=200)
@@ -26,6 +26,8 @@ class DocumentoFiscal(models.Model):
     metodo_pago = columns.Char("Metodo de pago")
     uuid_comprobante = columns.Char('UUID', size=100)
     fecha_timbrado = columns.DateTime('Fecha de Timbrado')
+    impuestos_retenidos = columns.Float('Impuestos Retenidos', default=0)
+    impuestos_trasladados = columns.Float('Impuestos Trasladados', default=0)
     xml = columns.Text('XML')
 
 

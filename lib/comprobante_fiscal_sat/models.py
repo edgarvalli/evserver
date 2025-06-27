@@ -93,3 +93,61 @@ class Comprobante(Common):
     MetodoPago: str = field(default_factory=default_str)
     LugarExpedicion: str = field(default_factory=default_str)
     impuestos: List[Impuesto] = field(default_factory=default_list)
+    TotalImpuestosRetenidos: float = field(default_factory=default_float)
+    TotalImpuestosTrasladados: float = field(default_factory=default_float)
+
+
+@dataclass
+class RetencionDR(Common):
+    BaseDR: float = field(default_factory=default_float)
+    ImpuestoDR: str = field(default_factory=default_str)
+    TipoFactorDR: str = field(default_factory=default_str)
+    TasaOCuotaDR: float = field(default_factory=default_float)
+    ImporteDR: float = field(default_factory=default_float)
+
+
+@dataclass
+class TrasladoDR(Common):
+    BaseDR: float = field(default_factory=default_float)
+    ImpuestoDR: str = field(default_factory=default_str)
+    TipoFactorDR: str = field(default_factory=default_str)
+    TasaOCuotaDR: float = field(default_factory=default_float)
+    ImporteDR: float = field(default_factory=default_float)
+
+
+@dataclass
+class DocumentoRelacionado(Common):
+    IdDocumento: str = field(default_factory=default_str)
+    Serie: str = field(default_factory=default_str)
+    Folio: str = field(default_factory=default_str)
+    MonedaDR: str = field(default_factory=default_str)
+    EquivalenciaDR: float = field(default_factory=default_float)
+    NumParcialidad: str = field(default_factory=default_str)
+    ImpSaldoAnt: float = field(default_factory=default_float)
+    ImpPagado: float = field(default_factory=default_float)
+    ImpSaldoInsoluto: float = field(default_factory=default_float)
+    ObjetoImpDR: str = field(default_factory=default_str)
+    impuestos_retencion: List[RetencionDR] = field(default_factory=default_list)
+    impuestos_traslado: List[TrasladoDR] = field(default_factory=default_list)
+
+
+@dataclass
+class Pago(Common):
+    FechaPago: str = field(default_factory=default_str)
+    FormaDePagoP: str = field(default_factory=default_str)
+    MonedaP: str = field(default_factory=default_str)
+    TipoCambioP: float = field(default_factory=default_float)
+    Monto: float = field(default_factory=default_float)
+    documentos_relacionados: List[DocumentoRelacionado] = field(
+        default_factory=default_list
+    )
+
+
+@dataclass
+class Pagos(Common):
+    Version: str = field(default_factory=default_str)
+    TotalRetencionesISR: float = field(default_factory=default_float)
+    TotalTrasladosBaseIVA16: float = field(default_factory=default_float)
+    TotalTrasladosImpuestoIVA16: float = field(default_factory=default_float)
+    MontoTotalPagos: float = field(default_factory=default_float)
+    pagos: List[Pago] = field(default_factory=default_list)

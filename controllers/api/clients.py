@@ -2,15 +2,15 @@ from utils.db import mysql, _mysql_errors
 from flask import Blueprint, request, jsonify
 
 # from utils.tools import get_root_path
-clients_route = Blueprint("clients_route", __name__, url_prefix="/clients")
+client_router = Blueprint("clients_route", __name__, url_prefix="/clients")
 
 
-@clients_route.errorhandler(ValueError)
+@client_router.errorhandler(ValueError)
 def handle_value_error(e: ValueError):
     return jsonify({"error": True, "message": e.args[0], "status_code": 400})
 
 
-@clients_route.route("/")
+@client_router.route("/")
 def clients_search():
     print(clients_route.root_path)
     query = "SELECT c.id,c.name,c.email,c.rfc, a.address,a.zip_code " \
@@ -34,7 +34,7 @@ def clients_search():
         raise ValueError(f"Mysql Error[{e.errno}]: {e.msg}")
 
 
-@clients_route.route("/save", methods=["POST"])
+@client_router.route("/save", methods=["POST"])
 def clients_route_save():
     data = {}
     files = request.files

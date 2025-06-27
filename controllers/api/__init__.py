@@ -4,8 +4,8 @@ from importlib import import_module
 
 api = Blueprint('api', __name__, url_prefix='/api')
 
-api.register_blueprint(import_module('controllers.api.clients').clients_route)
-api.register_blueprint(import_module('controllers.api.documentos_fiscales').doc_router)
+api.register_blueprint(import_module('controllers.api.clients').client_router)
+api.register_blueprint(import_module('controllers.api.documentos').doc_router)
 
 @api.route('/')
 def api_index():
