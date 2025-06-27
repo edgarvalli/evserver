@@ -110,7 +110,7 @@ export default () => {
                                 <div className="col mb-3">
                                     <Form.Group controlId="fiscal-mtodo-pago-id">
                                         <Form.Label>Metodo de Pago Preferido</Form.Label>
-                                        <MetodoPagoList required  name="metodo_pago_id"/>
+                                        <MetodoPagoList required  name="metodo_pago_id" />
                                     </Form.Group>
                                 </div>
 
