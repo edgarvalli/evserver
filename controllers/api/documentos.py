@@ -2,13 +2,13 @@ from zipfile import ZipFile
 from xml.etree.ElementTree import ParseError
 from flask import Blueprint, request, jsonify
 from utils.tools import get_config
-from schema.documentos import DocumentoFiscal
+from schema.documentos import Documento
 from lib.evschema import DBConfig
 from utils.db import _mysql_errors, mysql
 from datetime import datetime
 
 doc_router = Blueprint(
-    "documentos_fiscales_route", __name__, url_prefix="documentos_fiscales"
+    "documentos_fiscales_route", __name__, url_prefix="documentos"
 )
 
 
@@ -29,7 +29,7 @@ def handle_value_error(e: ValueError):
 def doc_search():
     try:
 
-        data = mysql.search(model="documentos_fiscales", **request.args)
+        data = mysql.search(model="documentos", **request.args)
 
         return {
             "error": False,
@@ -53,12 +53,12 @@ def doc_rfc_documentos(rfc: str):
     if startdate is not None and enddate is not None:
         wheres = f"AND fecha BETWEEN '{startdate}' AND '{enddate}'"
 
-    query = f"SELECT {fields} FROM documentos_fiscales WHERE receptor_rfc='{rfc}' {wheres} LIMIT {limit}"
+    query = f"SELECT {fields} FROM documentos WHERE receptor_rfc='{rfc}' {wheres} LIMIT {limit}"
     documentos_recibidos = mysql.fetchall(query)
     if documentos_recibidos is None:
         documentos_recibidos = []
 
-    query = f"SELECT {fields} FROM documentos_fiscales WHERE emisor_rfc='{rfc}' {wheres} LIMIT {limit}"
+    query = f"SELECT {fields} FROM documentos WHERE emisor_rfc='{rfc}' {wheres} LIMIT {limit}"
     documentos_emitidos = mysql.fetchall(query)
     if documentos_emitidos is None:
         documentos_emitidos = []
@@ -99,38 +99,41 @@ def doc_fis_save():
             from lib.comprobante_fiscal_sat import ComprobanteFiscal
 
             cf = ComprobanteFiscal.convertirxml(xml_content)
+
             if cf is not None:
                 config = DBConfig(**get_config()["mysql"])
-                df = DocumentoFiscal(config=config)
+                doc = Documento(config=config)
 
-                df.receptor = cf.receptor.Nombre
-                df.receptor_rfc = cf.receptor.Rfc
-                df.emisor = cf.emisor.Nombre
-                df.emisor_rfc = cf.emisor.Rfc
-                df.version = cf.comprobante.Version
-                df.serie = cf.comprobante.Serie
-                df.folio = cf.comprobante.Folio
-                df.fecha = cf.comprobante.Fecha
-                df.sello = cf.comprobante.Sello
-                df.forma_pago = cf.comprobante.FormaPago
-                df.nocertificado = cf.comprobante.NoCertificado
-                df.moneda = cf.comprobante.Moneda
-                df.tipo_cambio = cf.comprobante.TipoCambio
-                df.subtotal = cf.comprobante.SubTotal
-                df.total = cf.comprobante.Total
-                df.tipo_de_comprobante = cf.comprobante.TipoDeComprobante
-                df.exportacion = cf.comprobante.Exportacion
-                df.metodo_pago = cf.comprobante.MetodoPago
-                df.uuid_comprobante = cf.timbrefiscal.UUID
-                df.fecha_timbrado = cf.timbrefiscal.FechaTimbrado
-                df.xml = xml_content
+                doc.receptor = cf.receptor.Nombre
+                doc.receptor_rfc = cf.receptor.Rfc
+                doc.emisor = cf.emisor.Nombre
+                doc.emisor_rfc = cf.emisor.Rfc
+                doc.version = cf.comprobante.Version
+                doc.serie = cf.comprobante.Serie
+                doc.folio = cf.comprobante.Folio
+                doc.fecha = cf.comprobante.Fecha
+                doc.sello = cf.comprobante.Sello
+                doc.forma_pago = cf.comprobante.FormaPago
+                doc.nocertificado = cf.comprobante.NoCertificado
+                doc.moneda = cf.comprobante.Moneda
+                doc.tipo_cambio = cf.comprobante.TipoCambio
+                doc.subtotal = cf.comprobante.SubTotal
+                doc.total = cf.comprobante.Total
+                doc.tipo_de_comprobante = cf.comprobante.TipoDeComprobante
+                doc.exportacion = cf.comprobante.Exportacion
+                doc.metodo_pago = cf.comprobante.MetodoPago
+                doc.uuid_comprobante = cf.timbrefiscal.UUID
+                doc.fecha_timbrado = cf.timbrefiscal.FechaTimbrado
+                doc.impuestos_retenidos = cf.comprobante.TotalImpuestosRetenidos
+                doc.impuestos_trasladados = cf.comprobante.TotalImpuestosTrasladados
+                doc.xml = xml_content
 
-                result = df.save()
+                result = doc.save()
                 if not result.error:
 
                     query = """
-                        INSERT INTO documentos_fiscales_conceptos
-                        (documento_fiscal_id,valor_unitario,objeto_impuesto,noidentificacion,
+                        INSERT INTO documento_conceptos
+                        (documento_id,valor_unitario,objeto_impuesto,noidentificacion,
                         importe,descripcion,clave_prodserv,cantidad) VALUES
                         (%s,%s,%s,%s,%s,%s,%s,%s)
                     """
@@ -166,8 +169,8 @@ def doc_fis_save():
                             )
 
                         query = """
-                            INSERT INTO documentos_fiscales_impuestos
-                            (documento_fiscal_id,documento_fiscal_concepto_id,tipo_impuesto,
+                            INSERT INTO documento_impuestos
+                            (documento_id,concepto_id,tipo_impuesto,
                             tipo_factor,tasa_o_couta,impuesto,importe,base) VALUES
                             (%s,%s,%s,%s,%s,%s,%s,%s)
                         """
@@ -223,7 +226,7 @@ def doc_fis_save():
     else:
         raise ValueError("Debe de cargar un archivo.")
 
-@doc_router.route('/reports/impuestos')
+@doc_router.route('/reportes/impuestos')
 def doc_impuestos():
 
     impuestos = {}
@@ -234,27 +237,11 @@ def doc_impuestos():
         if tipo == 'recibidos': field_rfc = 'receptor_rfc'
 
         query = """
-            SELECT
-                impuesto.id, impuesto.importe, df.uuid_comprobante,impuesto.tipo_impuesto,
-                impuesto.impuesto, df.serie, df.fecha_timbrado
-            FROM documentos_fiscales_impuestos impuesto, documentos_fiscales df
-            WHERE impuesto.documento_fiscal_id=df.id
-            AND df.fecha_timbrado BETWEEN '2024-01-01' AND '2024-12-31'
-            AND df.{} = 'VAME890407PG8';
+            SELECT * FROM documentos WHERE {}='VAME890407PG8' AND tipo_de_comprobante="I";
         """.format(field_rfc)
         
         records = mysql.fetchall(query)
-
-        for doc in records:
-            
-            fecha: datetime = doc['fecha_timbrado']
-            index = fecha.month
-
-            if not index in impuestos: impuestos[index] = {}
-            if not tipo in impuestos[index]: impuestos[index][tipo] = {}
-
-            key = str(doc['tipo_impuesto']).lower()
-            print(key)
+        impuestos[tipo] = records
     
     works('emitidos')
     works('recibidos')

@@ -9,7 +9,16 @@ from .models import (
     Pagos,
     Pago,
     DocumentoRelacionado,
+    RetencionDR,
+    TrasladoDR,
+    Complementos
 )
+
+namespaces = {
+    "cfdi": "http://www.sat.gob.mx/cfd/4",
+    "pago20": "http://www.sat.gob.mx/Pagos20",
+    "tfd": "http://www.sat.gob.mx/TimbreFiscalDigital",
+}
 
 
 class ComprobantePago:
@@ -18,7 +27,39 @@ class ComprobantePago:
     receptor: Receptor
     conceptos: List[Concepto]
     timbrefiscal: TimbreFiscal
-    complementos: Pagos
+    complementos: List
+
+    @staticmethod
+    def obtener_retenciones(tag: ET.Element) -> List[RetencionDR]:
+
+        retenciones = []
+        retenciones_tag = tag.findall(".//pago20:RetencionesDR", namespaces)
+
+        if retenciones_tag is None:
+            return retenciones
+
+        for _retencion in retenciones_tag:
+            _r = RetencionDR()
+            _r.set_from_dict(_retencion.attrib)
+            retenciones.append(_r)
+
+        return retenciones
+
+    @staticmethod
+    def obtener_traslados(tag: ET.Element) -> List[TrasladoDR]:
+
+        traslados = []
+        traslados_tag = tag.findall(".//pago20:TrasladosDR", namespaces)
+
+        if traslados_tag is None:
+            return traslados
+
+        for _traslado in traslados_tag:
+            _r = TrasladoDR()
+            _r.set_from_dict(_traslado.attrib)
+            traslados.append(_r)
+
+        return traslados
 
     @staticmethod
     def obtener_documentos_relacionados(tag: ET.Element) -> List[DocumentoRelacionado]:
@@ -26,10 +67,7 @@ class ComprobantePago:
         if tag is None:
             return relacionados
 
-        doc_rel_tag = tag.findall(
-            ".//pago20:DoctoRelacionado",
-            namespaces={"pago:20": "http://www.sat.gob.mx/Pagos20"},
-        )
+        doc_rel_tag = tag.findall(".//pago20:DoctoRelacionado", namespaces)
 
         if doc_rel_tag is None:
             return relacionados
@@ -38,6 +76,8 @@ class ComprobantePago:
 
             dr = DocumentoRelacionado()
             dr.set_from_dict(dr_tag.attrib)
+            dr.impuestos_retencion = ComprobantePago.obtener_retenciones(dr_tag)
+            dr.impuestos_traslado = ComprobantePago.obtener_traslados(dr_tag)
             relacionados.append(dr)
 
         return relacionados
@@ -46,9 +86,7 @@ class ComprobantePago:
     def obtener_pagos(tag: ET.Element) -> List[Pago]:
         pagos = []
 
-        pagos_tag = tag.findall(
-            ".//pago20:Pago", namespaces={"pago:20": "http://www.sat.gob.mx/Pagos20"}
-        )
+        pagos_tag = tag.findall(".//pago20:Pago", namespaces)
 
         if pagos_tag is None:
             return []
@@ -81,11 +119,6 @@ class ComprobantePago:
 
         comprobante = Comprobante()
         comprobante.set_from_dict(root.attrib)
-
-        namespaces = {
-            "cfdi": "http://www.sat.gob.mx/cfd/4",
-            "pago20": "http://www.sat.gob.mx/Pagos20",
-        }
 
         emisor_tag = root.find(".//cfdi:Emisor", namespaces)
 
@@ -123,6 +156,9 @@ class ComprobantePago:
                 pagos.set_from_dict(pagos_totales_tag.attrib)
 
             pagos.pagos = ComprobantePago.obtener_pagos(pagos_tag)
+        
+        complementos = Complementos()
+        complementos.pagos = Pagos
         # Declarar comprobante
 
         comprobante_pago = ComprobantePago()
@@ -131,6 +167,6 @@ class ComprobantePago:
         comprobante_pago.receptor = receptor
         comprobante_pago.timbrefiscal = timbrefiscal
         comprobante_pago.conceptos = conceptos
-        comprobante_pago.complementos = Pagos
+        comprobante_pago.complementos = complementos
 
         return comprobante_pago

@@ -21,21 +21,22 @@ class Documento(models.Model):
     tipo_cambio = columns.Float("Tipo de Cambio")
     subtotal = columns.Float("Subtotal")
     total = columns.Float("Total")
-    tipo_de_comprobante = columns.Char("Tipo de Comprobante")
+    tipo_de_comprobante = columns.Char("Tipo de Comprobante", size=4)
     exportacion = columns.Char("Exportacion")
     metodo_pago = columns.Char("Metodo de pago")
-    uuid_comprobante = columns.Char('UUID', size=100)
+    uuid_comprobante = columns.Char('UUID', size=100, unique=True, index=True)
     fecha_timbrado = columns.DateTime('Fecha de Timbrado')
     impuestos_retenidos = columns.Float('Impuestos Retenidos', default=0)
     impuestos_trasladados = columns.Float('Impuestos Trasladados', default=0)
+    estatus_pago = columns.Integer("Estado de Pago") # 0 - No pagado, 1 - Pagado, 2 - Pagado Parcial
     xml = columns.Text('XML')
 
 
 class DocumentoConceptos(models.Model):
-    _name = "documentos_fiscales_conceptos"
+    _name = "documento_conceptos"
     _description = "Tabla de conceptos de los documentos"
 
-    documento_fiscal_id = columns.Integer("ID Documento Fiscal")
+    documento_id = columns.Integer("ID Documento Fiscal")
     clave_prodserv = columns.Char('Clave Producto o Servicio')
     noidentificacion = columns.Char('No. Identificacion')
     cantidad = columns.Float('Cantidad')
@@ -44,12 +45,12 @@ class DocumentoConceptos(models.Model):
     importe = columns.Float('Importe')
     objeto_impuesto = columns.Char('Objeto de Impuesto')
 
-class DocumentoFiscalImpuestos(models.Model):
-    _name = 'documentos_fiscales_impuestos'
+class DocumentoImpuestos(models.Model):
+    _name = 'documento_impuestos'
 
 
-    documento_fiscal_id = columns.Integer('ID Documento Fiscal')
-    documento_fiscal_concepto_id = columns.Integer('ID Concepto')
+    documento_id = columns.Integer('ID Documento Fiscal')
+    concepto_id = columns.Integer('ID Concepto')
     tipo_impuesto = columns.Char('Tipo de Impuesto', size=50)
     base = columns.Float('Base')
     impuesto = columns.Char('Clave impuesto')

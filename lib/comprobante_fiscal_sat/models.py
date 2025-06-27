@@ -151,3 +151,7 @@ class Pagos(Common):
     TotalTrasladosImpuestoIVA16: float = field(default_factory=default_float)
     MontoTotalPagos: float = field(default_factory=default_float)
     pagos: List[Pago] = field(default_factory=default_list)
+
+@dataclass
+class Complementos(Common):
+    pagos: Pagos = field(default_factory=default_list)

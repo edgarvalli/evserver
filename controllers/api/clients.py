@@ -12,7 +12,6 @@ def handle_value_error(e: ValueError):
 
 @client_router.route("/")
 def clients_search():
-    print(clients_route.root_path)
     query = "SELECT c.id,c.name,c.email,c.rfc, a.address,a.zip_code " \
     "FROM clients AS c, address AS a " \
     "WHERE a.rel_id = c.id AND a.rel_model = 'clients'"

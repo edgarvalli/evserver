@@ -7,6 +7,7 @@ from .models import (
     Concepto,
     Comprobante,
     TimbreFiscal,
+    Complementos
 )
 
 
@@ -34,6 +35,7 @@ class ComprobanteIngreso:
     receptor: Receptor
     conceptos: List[Concepto]
     timbrefiscal: TimbreFiscal
+    complementos: Complementos
 
     @staticmethod
     def convertir_xml(xml: str) -> "ComprobanteIngreso":
@@ -112,6 +114,7 @@ class ComprobanteIngreso:
         comprobante_ingreso.receptor = receptor
         comprobante_ingreso.timbrefiscal = timbrefiscal
         comprobante_ingreso.conceptos = conceptos
+        comprobante_ingreso.complementos = Complementos()
 
 
         return comprobante_ingreso

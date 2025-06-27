@@ -1,12 +1,9 @@
-from utils.db import mysql
-from utils.tools import hash_password
+from lib.comprobante_fiscal_sat import ComprobanteFiscal
+from pathlib import Path
 
-user = mysql.save(
-    model="users",
-    username='evalli',
-    password_hash=hash_password('p4ssw0rd'),
-    displayname='Edgar Valli',
-    active=1
-)
+filepath = Path("C:\\Users\\evalli\\Downloads\\VAME890407PG8_EMITIDOS_2024")
 
-print(user)
+for file in filepath.iterdir():
+    c = ComprobanteFiscal.convertirxml(str(file))
+
+    print(c.complementos)
